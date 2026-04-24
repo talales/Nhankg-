@@ -1,0 +1,198 @@
+-- Xóa GUI cũ nếu có
+pcall(function()
+    game.CoreGui:FindFirstChild("DarkDepthGui"):Destroy()
+    game.CoreGui:FindFirstChild("DarkDepthBigSquareGui"):Destroy()
+end)
+
+local CoreGui = game:GetService("CoreGui")
+local Lighting = game:GetService("Lighting")
+
+-- Tạo GUI chính
+local function createMainGui()
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "DarkDepthGui"
+    gui.ResetOnSpawn = false
+    gui.Parent = CoreGui
+
+    local darkDepth = false
+    local CustomMusic = nil
+
+    local function createButton(name, yOffset, text)
+        local btn = Instance.new("TextButton")
+        btn.Name = name
+        btn.Size = UDim2.new(0, 200, 0, 50)
+        btn.Position = UDim2.new(0.5, -100, 0.5, yOffset)
+        btn.BackgroundColor3 = Color3.new(1, 1, 1)
+        btn.TextColor3 = Color3.new(0, 0, 0)
+        btn.TextSize = 20
+        btn.Font = Enum.Font.SourceSansBold
+        btn.Text = text
+        btn.ZIndex = 2
+        btn.Parent = gui
+        return btn
+    end
+
+    local darkDepthBtn = createButton("DarkDepthButton", -90, "DarkDepth: false")
+    local startBtn     = createButton("StartButton", -30, "Start")
+    local cancelBtn    = createButton("CancelButton", 30, "Cancel")
+    local moreBtn      = createButton("MoreModesButton", 90, "More Modes")
+    startBtn.Visible = false
+
+    -- Khung vuông
+    local square = Instance.new("Frame")
+    square.Size = UDim2.new(0.5, 0, 0.5, 0)
+    square.Position = UDim2.new(0.25, 0, 0.25, 0)
+    square.BackgroundColor3 = Color3.new(1, 1, 1)
+    square.ZIndex = 1
+    square.Visible = true
+    square.Parent = gui
+
+    local function getGitSoundId(GithubSoundPath, AssetName)
+        if not isfile(AssetName..".mp3") then 
+            writefile(AssetName..".mp3", game:HttpGet(GithubSoundPath)) 
+        end
+        local sound = Instance.new("Sound")
+        sound.SoundId = getcustomasset(AssetName..".mp3", true)
+        return sound 
+    end
+
+    local function updateDarkDepth()
+        darkDepthBtn.Text = "DarkDepth: " .. tostring(darkDepth)
+        if darkDepth then
+            darkDepthBtn.BackgroundColor3 = Color3.new(0, 0, 0)
+            darkDepthBtn.TextColor3 = Color3.new(1, 1, 1)
+            startBtn.Visible = true
+        else
+            darkDepthBtn.BackgroundColor3 = Color3.new(1, 1, 1)
+            darkDepthBtn.TextColor3 = Color3.new(0, 0, 0)
+            startBtn.Visible = false
+        end
+    end
+
+    darkDepthBtn.MouseButton1Click:Connect(function()
+        darkDepth = not darkDepth
+        updateDarkDepth()
+    end)
+
+    startBtn.MouseButton1Click:Connect(function()
+        if darkDepth then
+            gui.Enabled = false
+
+            Lighting.FogStart = 0
+            Lighting.FogEnd = 15
+            Lighting.FogColor = Color3.new(0, 0, 0)
+
+            if not CustomMusic then
+                CustomMusic = getGitSoundId("https://github.com/nervehammer1/throwawaystuff/raw/refs/heads/main/NightmareAmbient.mp3", "NightmareModeAmbient")
+                CustomMusic.Parent = game.Workspace
+                CustomMusic.Looped = true
+                CustomMusic.Volume = 5
+            end
+            CustomMusic:Play()
+
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/eoyoustme/back/refs/heads/main/darkdepth"))()
+
+            cancelBtn.MouseButton1Click:Connect(function()
+                gui:Destroy()
+                if CustomMusic then
+                    CustomMusic:Stop()
+                    CustomMusic:Destroy()
+                    CustomMusic = nil
+                end
+             loadstring(game:HttpGet("https://raw.githubusercontent.com/eoyoustme/ohh/refs/heads/main/bread"))()
+            end)
+        end
+    end)
+
+    cancelBtn.MouseButton1Click:Connect(function()
+        gui:Destroy()
+        square.Visible = false
+        if CustomMusic then
+            CustomMusic:Stop()
+            CustomMusic:Destroy()
+            CustomMusic = nil
+        end
+        Lighting.FogStart = 0
+        Lighting.FogEnd = 100000
+
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/talales/Nhankg8262/refs/heads/main/jumpscare"))()
+    end)
+
+    moreBtn.MouseButton1Click:Connect(function()
+        gui:Destroy()
+        createMoreModesGui()
+    end)
+
+    updateDarkDepth()
+end
+
+-- Tạo GUI More Modes với 2 nút và nút Back
+function createMoreModesGui()
+    local moreGui = Instance.new("ScreenGui")
+    moreGui.Name = "DarkDepthBigSquareGui"
+    moreGui.ResetOnSpawn = false
+    moreGui.Parent = game.CoreGui
+
+    -- Khung vuông
+    local square = Instance.new("Frame")
+    square.Size = UDim2.new(0.5, 0, 0.5, 0)
+    square.Position = UDim2.new(0.25, 0, 0.25, 0)
+    square.BackgroundColor3 = Color3.new(1, 1, 1)
+    square.ZIndex = 1
+    square.Visible = true
+    square.Parent = moreGui
+
+    -- Hardcore but Bad button
+    local btn1 = Instance.new("TextButton")
+    btn1.Name = "HardcoreButBad"
+    btn1.Size = UDim2.new(0, 220, 0, 50)
+    btn1.Position = UDim2.new(0.5, -110, 0.5, -60)
+    btn1.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+    btn1.TextColor3 = Color3.new(0, 0, 0)
+    btn1.TextSize = 20
+    btn1.Font = Enum.Font.SourceSansBold
+    btn1.Text = "Doors Hardcore super but Bad"
+    btn1.Parent = moreGui
+
+    -- Hardcore Desolation button
+    local btn2 = Instance.new("TextButton")
+    btn2.Name = "HardcoreDesolation"
+    btn2.Size = UDim2.new(0, 220, 0, 50)
+    btn2.Position = UDim2.new(0.5, -110, 0.5, 10)
+    btn2.BackgroundColor3 = Color3.fromRGB(100, 100, 255)
+    btn2.TextColor3 = Color3.new(0, 0, 0)
+    btn2.TextSize = 20
+    btn2.Font = Enum.Font.SourceSansBold
+    btn2.Text = "Doors Hardcore Desolation"
+    btn2.Parent = moreGui
+
+    -- Back button
+    local backBtn = Instance.new("TextButton")
+    backBtn.Name = "BackButton"
+    backBtn.Size = UDim2.new(0, 100, 0, 40)
+    backBtn.Position = UDim2.new(0, 10, 0, 10)
+    backBtn.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+    backBtn.TextColor3 = Color3.new(0, 0, 0)
+    backBtn.TextSize = 18
+    backBtn.Font = Enum.Font.SourceSans
+    backBtn.Text = "Back"
+    backBtn.Parent = moreGui
+
+    btn1.MouseButton1Click:Connect(function()
+        moreGui:Destroy()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/eoyoustme/Monoxide/refs/heads/main/Doors%20hardcore%20super%20but%20bad%20mode"))()
+    end)
+
+    btn2.MouseButton1Click:Connect(function()
+        moreGui:Destroy()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/eoyoustme/rebouna/refs/heads/main/The%20Hardcore%20Desolation"))()
+    end)
+
+    backBtn.MouseButton1Click:Connect(function()
+        moreGui:Destroy()
+        createMainGui()
+    end)
+end
+
+-- Khởi tạo GUI chính
+createMainGui()
